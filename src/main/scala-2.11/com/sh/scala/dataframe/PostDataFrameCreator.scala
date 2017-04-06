@@ -10,7 +10,7 @@ import org.apache.spark.sql.{DataFrame, Row, SparkSession}
   * Created by alex on 4/5/17.
   */
 
-object DataFrameCreator {
+object PostDataFrameCreator {
 
   def viaTuple(spark: SparkSession, posts: RDD[Array[String]]): DataFrame = {
 

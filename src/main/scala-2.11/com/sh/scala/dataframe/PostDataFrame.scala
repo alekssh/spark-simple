@@ -15,6 +15,7 @@ object PostDataFrame {
     val spark = SparkSession.builder()
       .appName("Posts processing")
       .master("local[*]")
+      .enableHiveSupport()
       .getOrCreate()
 
     import spark.implicits._
@@ -28,7 +29,7 @@ object PostDataFrame {
         val postsDfTuple = DataFrameCreator.viaTuple(spark, posts)
         val postsDfCase = DataFrameCreator.viaCase(spark, posts)
     */
-    val postsDf = DataFrameCreator.viaStruct(spark, posts)
+    val postsDf = PostDataFrameCreator.viaStruct(spark, posts)
 
     postsDf.printSchema()
     postsDf.show(3)
@@ -68,7 +69,6 @@ object PostDataFrame {
     val cleanPostsDf = spark.createDataFrame(cleanedTextRdd, postsDf.schema)
 
     cleanPostsDf.show(10)
-
 
     //aggregation
     cleanPostsDf.groupBy('ownerUserId).agg(count('id).as("c"), max('lastActivityDate), max('score)).orderBy('c desc) show (5)
