@@ -76,6 +76,17 @@ object PostDataFrame {
     val smplDf = cleanPostsDf.where('ownerUserId >= 13 and 'ownerUserId <= 15)
     smplDf.rollup('ownerUserId, 'tags, 'postTypeId).count.show()
     smplDf.cube('ownerUserId, 'tags, 'postTypeId).count.show()
+
+
+    //temp view
+    cleanPostsDf.createOrReplaceTempView("posts_tmp")
+    //permanent table
+    //cleanPostsDf.write.saveAsTable("posts")
+
+    spark.catalog.listTables().show()
+
+    spark.sql("select title from posts_tmp where postTypeId=1 order by score desc limit 3").show()
+
   }
 
 }
