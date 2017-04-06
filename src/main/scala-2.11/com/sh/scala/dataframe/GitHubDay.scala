@@ -12,6 +12,8 @@ object GitHubDay {
 
   def main(args: Array[String]): Unit = {
 
+    val resourceDir = args(0)
+
     val spark = SparkSession.builder()
       .appName("Git hub push counter")
       .master("local[*]")
@@ -19,7 +21,7 @@ object GitHubDay {
 
     val sc = spark.sparkContext
 
-    val inputPath = "src/main/resources/github-archive/*.json"
+    val inputPath = resourceDir + "/github-archive/*.json"
 
     val ghLog = spark.read.json(inputPath)
 
@@ -39,7 +41,7 @@ object GitHubDay {
     ordered.show(5)
 
     import spark.implicits._
-    val empPath = "src/main/resources/ghEmployees.txt"
+    val empPath = resourceDir + "/ghEmployees.txt"
     val employees = Set() ++ (for {line <- Source.fromFile(empPath).getLines()} yield line.trim)
 
     val bcEmployees = sc.broadcast(employees)
