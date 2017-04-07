@@ -1,7 +1,7 @@
 package com.sh.scala.dataframe
 
 import org.apache.spark.sql.expressions.Window
-import org.apache.spark.sql.{Row, SparkSession}
+import org.apache.spark.sql.{Row, SaveMode, SparkSession}
 
 /**
   * Created by alex on 4/5/17.
@@ -41,7 +41,10 @@ object PostDataFrame {
 
     val questions = postsDf.where($"postTypeId" === 1)
 
-    questions.withColumn("ratio", 'viewCount / 'score).where('ratio < 35).show()
+    val filteredQuestions = questions.withColumn("ratio", 'viewCount / 'score).where('ratio < 35)
+
+    //execution plan
+    filteredQuestions.explain(true)
 
     questions.sort('lastActivityDate desc).show(10)
 
@@ -81,11 +84,19 @@ object PostDataFrame {
     //temp view
     cleanPostsDf.createOrReplaceTempView("posts_tmp")
     //permanent table
-    //cleanPostsDf.write.saveAsTable("posts")
+
+    cleanPostsDf.write.mode(SaveMode.Overwrite).saveAsTable("posts")
 
     spark.catalog.listTables().show()
 
     spark.sql("select title from posts_tmp where postTypeId=1 order by score desc limit 3").show()
+
+
+    val readPostsDf = spark.read.table("posts")
+
+    readPostsDf.show(3)
+
+
 
   }
 
